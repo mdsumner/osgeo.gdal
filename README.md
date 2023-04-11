@@ -23,7 +23,13 @@ Very silly example for now, we just have a geometry reader and it can be
 reprojected to a local crs.
 
 Can turn on the reprojection, can turn on simplification (try reading
-just one at a time, it’s about 200Mb of geometry total over a url).
+just one at a time, it’s about 200Mb of geometry total over a url for
+the default data source, or set your own).
+
+`ia` means index of arbitrary positions, so you’re assumed to know how
+many are there atm - use og_read_fields() to get the fields first.
+
+Bit of a mess atm for fields …
 
 ``` r
 library(osgeo.gdal)
@@ -62,29 +68,26 @@ og_read_fields(ia = 60:62)
 #> 2 ETH        ADM0     
 #> 3 FJI        ADM0
 
-allfields <- og_read_fields(ia = 1:200)
-
-idx <- match(c("CAN", "MEX", "USA"), allfields$shapeGroup)
-plot(og_read_geometry(ia = idx, simplify = .05))
+# #allfields <- og_read_fields(ia = 1:200)
+# 
+# idx <- match(c("CAN", "MEX", "USA"), allfields$shapeGroup)
+# plot(og_read_geometry(ia = idx, simplify = .05))
+# 
+# 
+# ## finally, apply the local custom projection
+# plot(og_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
+# 
+# plot(og_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
 ```
 
-<img src="man/figures/README-example-4.png" width="100%" />
+Use a different data source.
 
 ``` r
-
-
-## finally, apply the local custom projection
-plot(og_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
+# geojson <- "/vsicurl/https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_geography_marine_polys.geojson"
+# marine <- og_read_geometry(geojson, ia = 1:120)
+# plot(marine, col = sample(hcl.colors(120)))
+# og_read_fields(geojson, ia = 1:120)
 ```
-
-<img src="man/figures/README-example-5.png" width="100%" />
-
-``` r
-
-plot(og_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
-```
-
-<img src="man/figures/README-example-6.png" width="100%" />
 
 ## Code of Conduct
 

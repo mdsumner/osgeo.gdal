@@ -10,6 +10,7 @@ og_read_geometry <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L, simplify 
   src <- ds$GetLayerByIndex(as.integer(layer - 1))
   cnt <- src$GetFeatureCount()
 
+  if (is.null(ia)) ia <- seq_len(cnt)
   if (any(ia < 1) || any(ia > cnt) || anyNA(ia)) stop("invalid feature number")
   #features_to_read <- sort(ij)
   wkb0 <- vector("list", length(ia))
@@ -28,7 +29,7 @@ og_read_geometry <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L, simplify 
       env <- geom$GetEnvelope()
       input <- sprintf(template, mean(unlist(env[1:2])), mean(unlist(env[3:4])))
       transformer <- gdal$osr$CoordinateTransformation(geom$GetSpatialReference(),
-                                                 gdal$osr$SpatialReference(gdal$osr$GetUserInputAsWKT(input)))
+                                                       gdal$osr$SpatialReference(gdal$osr$GetUserInputAsWKT(input)))
       err <- geom$Transform(transformer)
     }
     wkb0[[i]] <- geom$ExportToWkb()
@@ -49,18 +50,34 @@ og_read_fields <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L) {
   src <- ds$GetLayerByIndex(as.integer(layer - 1))
   cnt <- src$GetFeatureCount()
 
+  if (is.null(ia)) ia <- seq_len(cnt)
   if (any(ia < 1) || any(ia > cnt) || anyNA(ia)) stop("invalid feature number")
   #features_to_read <- sort(ij)
   feat0 <- vector("list", length(ia))
   def <- src$GetLayerDefn()
+  badlist <- vector("list", length(feat0))
+
   for (i in seq_along(feat0)) {
     feature <- src$GetFeature(ia[i] - 1)
     if (i == 1) {
       fcount <- feature$GetFieldCount()
       fnames <- unlist(lapply(seq_len(fcount), \(.x) def$GetFieldDefn(.x - 1L)$GetName()))
     }
+    lst <- setNames(lapply(seq_len(fcount), \(.x) feature$GetField(.x - 1L)), fnames)
+    bad <- which(unlist(lapply(lst, is.null)))
 
-    feat0[[i]] <- as.data.frame(setNames(lapply(seq_len(fcount), \(.x) feature$GetField(.x - 1L)), fnames))
+    badlist[[i]] <- bad
+    feat0[[i]] <- lst
   }
-  tibble::as_tibble(do.call(rbind, feat0))
+
+  ## names in common that were bad
+  bad <- sort(unique(unlist(badlist)))
+
+
+  if (length(bad) > 0) {
+    print(bad)
+    message(sprintf("some feature fields had NULL values, not dealt with yet\n full field set names were: \n%s", paste(fnames, collapse = ",")))
+    #stop()
+  }
+  tibble::as_tibble(do.call(rbind, lapply(feat0, tibble::as_tibble)))
 }
