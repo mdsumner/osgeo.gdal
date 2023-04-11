@@ -1,5 +1,7 @@
-
-gdal_read_geometry <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L, simplify = NULL, localproject = FALSE) {
+#' @importFrom wk wkb
+#' @name og_read_geometry
+#' @export
+og_read_geometry <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L, simplify = NULL, localproject = FALSE) {
   ## CGAZ() is just a path to a zipped shapefile on the internet /vsizip//vsicurl/https://.....zip
   ## gdal is 'import from osgeo gdal' as per python
   ds <- gdal$OpenEx(dsn)
@@ -35,8 +37,10 @@ gdal_read_geometry <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L, simplif
 }
 
 
-
-gdal_read_fields <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L) {
+#' @importFrom tibble as_tibble
+#' @name og_read_fields
+#' @export
+og_read_fields <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L) {
   ## CGAZ() is just a path to a zipped shapefile on the internet /vsizip//vsicurl/https://.....zip
   ## gdal is 'import from osgeo gdal' as per python
   ds <- gdal$OpenEx(dsn)
@@ -58,5 +62,5 @@ gdal_read_fields <- function(dsn = dsn::CGAZ(), ia = NULL, layer = 1L) {
 
     feat0[[i]] <- as.data.frame(setNames(lapply(seq_len(fcount), \(.x) feature$GetField(.x - 1L)), fnames))
   }
-  do.call(rbind, feat0)
+  tibble::as_tibble(do.call(rbind, feat0))
 }

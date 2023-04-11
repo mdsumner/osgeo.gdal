@@ -28,19 +28,19 @@ just one at a time, it’s about 200Mb of geometry total over a url).
 ``` r
 library(osgeo.gdal)
 ## basic example code
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50))
+plot(og_read_geometry(ia = 50))
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ``` r
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50, simplify = 1))
+plot(og_read_geometry(ia = 50, simplify = 1))
 ```
 
 <img src="man/figures/README-example-2.png" width="100%" />
 
 ``` r
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50, simplify = .1))
+plot(og_read_geometry(ia = 50, simplify = .1))
 ```
 
 <img src="man/figures/README-example-3.png" width="100%" />
@@ -48,20 +48,24 @@ plot(osgeo.gdal:::gdal_read_geometry(ia = 50, simplify = .1))
 ``` r
 
 ## to get the feature's fields use same index
-osgeo.gdal:::gdal_read_fields(ia = 50)
+og_read_fields(ia = 50)
+#> # A tibble: 1 × 2
 #>   shapeGroup shapeType
-#> 1        CZE      ADM0
+#>   <chr>      <chr>    
+#> 1 CZE        ADM0
 
-osgeo.gdal:::gdal_read_fields(ia = 60:62)
+og_read_fields(ia = 60:62)
+#> # A tibble: 3 × 2
 #>   shapeGroup shapeType
-#> 1        EST      ADM0
-#> 2        ETH      ADM0
-#> 3        FJI      ADM0
+#>   <chr>      <chr>    
+#> 1 EST        ADM0     
+#> 2 ETH        ADM0     
+#> 3 FJI        ADM0
 
-allfields <- osgeo.gdal:::gdal_read_fields(ia = 1:200)
+allfields <- og_read_fields(ia = 1:200)
 
 idx <- match(c("CAN", "MEX", "USA"), allfields$shapeGroup)
-plot(osgeo.gdal:::gdal_read_geometry(ia = idx, simplify = .05))
+plot(og_read_geometry(ia = idx, simplify = .05))
 ```
 
 <img src="man/figures/README-example-4.png" width="100%" />
@@ -70,14 +74,14 @@ plot(osgeo.gdal:::gdal_read_geometry(ia = idx, simplify = .05))
 
 
 ## finally, apply the local custom projection
-plot(osgeo.gdal:::gdal_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
+plot(og_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
 ```
 
 <img src="man/figures/README-example-5.png" width="100%" />
 
 ``` r
 
-plot(osgeo.gdal:::gdal_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
+plot(og_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
 ```
 
 <img src="man/figures/README-example-6.png" width="100%" />

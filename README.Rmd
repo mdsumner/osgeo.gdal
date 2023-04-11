@@ -40,25 +40,25 @@ Can turn on the reprojection, can turn on simplification (try reading just one a
 ```{r example}
 library(osgeo.gdal)
 ## basic example code
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50))
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50, simplify = 1))
-plot(osgeo.gdal:::gdal_read_geometry(ia = 50, simplify = .1))
+plot(og_read_geometry(ia = 50))
+plot(og_read_geometry(ia = 50, simplify = 1))
+plot(og_read_geometry(ia = 50, simplify = .1))
 
 ## to get the feature's fields use same index
-osgeo.gdal:::gdal_read_fields(ia = 50)
+og_read_fields(ia = 50)
 
-osgeo.gdal:::gdal_read_fields(ia = 60:62)
+og_read_fields(ia = 60:62)
 
-allfields <- osgeo.gdal:::gdal_read_fields(ia = 1:200)
+allfields <- og_read_fields(ia = 1:200)
 
 idx <- match(c("CAN", "MEX", "USA"), allfields$shapeGroup)
-plot(osgeo.gdal:::gdal_read_geometry(ia = idx, simplify = .05))
+plot(og_read_geometry(ia = idx, simplify = .05))
 
 
 ## finally, apply the local custom projection
-plot(osgeo.gdal:::gdal_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
+plot(og_read_geometry(ia = idx[1], simplify = .05, localproject = TRUE))
 
-plot(osgeo.gdal:::gdal_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
+plot(og_read_geometry(ia = which(allfields$shapeGroup == "ATA"), simplify = .05, localproject = TRUE))
 
 ```
 
